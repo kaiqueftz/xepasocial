@@ -1,9 +1,21 @@
-// Função para adicionar produto (POST)
-document.getElementById('produtoForm').addEventListener('submit', async function (event) {
+// Ao adicionar produto (POST)
+document.getElementById('produtoForm').addEventListener('submit', adicionarProduto);
+
+async function adicionarProduto(event) {
     event.preventDefault();
-    
     const nome = document.getElementById('nome').value;
     const descricao = document.getElementById('descricao').value;
+    const numero = document.getElementById('numero').value;
+
+    // Verificação de número
+    const numeroValido = /^\d{10,15}$/.test(numero); 
+    if (!numeroValido) {
+        alert("Número inválido!");
+        return;
+    }
+
+    // Gerar o link do WhatsApp
+    const whatsappLink = `https://api.whatsapp.com/send?phone=${numero}`;
 
     try {
         const response = await fetch('http://localhost:3000/produtos', {
@@ -11,14 +23,12 @@ document.getElementById('produtoForm').addEventListener('submit', async function
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ nome, descricao }),
+            body: JSON.stringify({ nome, descricao, numero, whatsapp_link: whatsappLink }), // Use o nome correto do campo
         });
 
         if (response.ok) {
             alert('Produto adicionado com sucesso!');
-            // Limpar o formulário
             document.getElementById('produtoForm').reset();
-            // Atualizar a lista de produtos
             await atualizarListaDeProdutos();
         } else {
             alert('Erro ao adicionar o produto.');
@@ -27,7 +37,8 @@ document.getElementById('produtoForm').addEventListener('submit', async function
         console.error('Erro:', error);
         alert('Erro ao se conectar ao servidor.');
     }
-});
+}
+
 
 // Função para atualizar a lista de produtos (GET)
 async function atualizarListaDeProdutos() {
@@ -49,7 +60,7 @@ async function atualizarListaDeProdutos() {
                     <div class="card-body d-flex flex-column justify-content-between">
                         <h5 class="card-title">${produto.nome}</h5>
                         <p class="card-text">${produto.descricao}</p>
-                        <a href="#" class="btn btn-primary align-self-center">Comprar</a>
+                        <a href="${produto.whatsapp_link}" target="_blank" class="btn btn-primary align-self-center">WhatsApp</a>
                         <button class="btn btn-warning align-self-center mb-2" onclick="carregarProdutoParaEdicao(${produto.id})">Editar</button>
                         <button class="btn btn-danger align-self-center" onclick="deletarProduto(${produto.id})">Excluir</button>
                     </div>
@@ -57,6 +68,7 @@ async function atualizarListaDeProdutos() {
             `;
             produtosContainer.appendChild(produtoDiv);
         });
+        
     } catch (error) {
         console.error('Erro ao buscar produtos:', error);
     }
@@ -107,33 +119,6 @@ async function editarProduto(id) {
     }
 }
 
-// Função para adicionar produto de volta após edição
-async function adicionarProduto(event) {
-    event.preventDefault();
-    const nome = document.getElementById('nome').value;
-    const descricao = document.getElementById('descricao').value;
-    try {
-        const response = await fetch('http://localhost:3000/produtos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ nome, descricao }),
-        });
-
-        if (response.ok) {
-            alert('Produto adicionado com sucesso!');
-            document.getElementById('produtoForm').reset();
-            await atualizarListaDeProdutos();
-        } else {
-            alert('Erro ao adicionar o produto.');
-        }
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao se conectar ao servidor.');
-    }
-}
-
 // Função para deletar produto (DELETE)
 async function deletarProduto(id) {
     try {
@@ -145,7 +130,10 @@ async function deletarProduto(id) {
             alert('Produto removido com sucesso!');
             await atualizarListaDeProdutos();
         } else {
-            alert('Erro ao remover o produto.');
+            // Captura a mensagem de erro retornada pelo servidor
+            const errorData = await response.json(); 
+            console.error('Erro ao remover o produto:', errorData);
+            alert(`Erro ao remover o produto: ${errorData.error || 'Erro desconhecido.'}`);
         }
     } catch (error) {
         console.error('Erro ao se conectar ao servidor:', error);
@@ -153,6 +141,8 @@ async function deletarProduto(id) {
     }
 }
 
+
 // Carrega os produtos ao iniciar a página
 document.addEventListener('DOMContentLoaded', atualizarListaDeProdutos);
+
 

@@ -20,12 +20,15 @@ exports.getProdutos = async (req, res) => {
 
 // Adicionar um novo produto
 exports.addProduto = async (req, res) => {
-  const { nome, descricao } = req.body;
+  const { nome, descricao, numero } = req.body; // Adiciona 'numero'
+
+  // Gerar o link do WhatsApp
+  const whatsappLink = `https://api.whatsapp.com/send?phone=${numero}`;
 
   try {
     const { data, error } = await supabase
       .from('produtos')
-      .insert([{ nome, descricao }]);
+      .insert([{ nome, descricao, whatsappLink }]); // Inclui 'whatsappLink' na inserção
 
     if (error) {
       throw error;
