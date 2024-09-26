@@ -7,10 +7,11 @@ const axios = require('axios'); // Para enviar requisições HTTP
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public'))); // Serve arquivos estáticos
 
-// Rota para a raiz
+// Rota para a raiz, que serve o arquivo HTML
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Envia o arquivo index.html
+    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Envia o arquivo index.html
 });
 
 // Rota para listar produtos
