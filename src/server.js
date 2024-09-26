@@ -31,40 +31,42 @@ app.get('/produtos', async (req, res) => {
     }
 });
 
+
 // Rota para adicionar produto
 app.post('/produtos', async (req, res) => {
-    const { nome, descricao, numero } = req.body;
+  const { nome, descricao, numero } = req.body;
 
-    // Verificação de número
-    const numeroValido = /^\d{10,15}$/.test(numero);
-    if (!numeroValido) {
-        return res.status(400).send('Número inválido!');
-    }
+  // Verificação de número
+  const numeroValido = /^\d{10,15}$/.test(numero);
+  if (!numeroValido) {
+      return res.status(400).send('Número inválido!');
+  }
 
-    // Gerar o link do WhatsApp
-    const whatsappLink = `https://api.whatsapp.com/send?phone=${numero}`;
+  // Gerar o link do WhatsApp
+  const whatsappLink = `https://api.whatsapp.com/send?phone=${numero}`;
 
-    try {
-        const { data, error } = await supabase
-            .from('produtos')
-            .insert([{ nome, descricao, whatsapp_link: whatsappLink }])
-            .select();
+  try {
+      const { data, error } = await supabase
+          .from('produtos')
+          .insert([{ nome, descricao, whatsapp_link: whatsappLink }]) // Use o nome correto do campo
+          .select();
 
-        if (error) {
-            console.error('Erro ao inserir no Supabase:', error);
-            return res.status(500).json({ error: error.message });
-        }
+      if (error) {
+          console.error('Erro ao inserir no Supabase:', error);
+          return res.status(500).json({ error: error.message });
+      }
 
-        if (!data || data.length === 0) {
-            return res.status(500).json({ error: 'Nenhum dado retornado após a inserção.' });
-        }
+      if (!data || data.length === 0) {
+          return res.status(500).json({ error: 'Nenhum dado retornado após a inserção.' });
+      }
 
-        res.status(201).json(data[0]);
-    } catch (error) {
-        console.error('Erro ao adicionar produto:', error.message);
-        res.status(500).send('Erro ao adicionar produto');
-    }
+      res.status(201).json(data[0]);
+  } catch (error) {
+      console.error('Erro ao adicionar produto:', error.message);
+      res.status(500).send('Erro ao adicionar produto');
+  }
 });
+
 
 // Rota para deletar produto
 app.delete('/produtos/:id', async (req, res) => {
