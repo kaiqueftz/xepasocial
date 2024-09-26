@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 // Rota para a raiz
 app.get('/', (req, res) => {
-    res.send('Bem-vindo à API do XepaSocial!');
+  res.sendFile(path.join(__dirname, 'public', 'index.html')); // Envia o arquivo index.html
 });
 
 // Rota para listar produtos
