@@ -18,7 +18,7 @@ async function adicionarProduto(event) {
     const whatsappLink = `https://api.whatsapp.com/send?phone=${numero}`;
 
     try {
-        const response = await fetch('https://code-xp-main.onrender.com/produtos', {
+        const response = await fetch('http://localhost:3000/produtos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ async function adicionarProduto(event) {
 // Função para atualizar a lista de produtos (GET)
 async function atualizarListaDeProdutos() {
     try {
-        const response = await fetch('https://code-xp-main.onrender.com/produtos');
+        const response = await fetch('http://localhost:3000/produtos');
         const produtos = await response.json();
 
         // Limpar os produtos existentes
@@ -122,7 +122,7 @@ async function editarProduto(id) {
 // Função para deletar produto (DELETE)
 async function deletarProduto(id) {
     try {
-        const response = await fetch(`https://code-xp-main.onrender.com/produtos/${id}`, {
+        const response = await fetch(`http://localhost:3000/produtos/${id}`, {
             method: 'DELETE',
         });
 
