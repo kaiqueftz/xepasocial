@@ -115,6 +115,56 @@ app.post('/whatsapp', async (req, res) => {
   }
 });
 
+// Rota para obter um produto pelo ID
+app.get('/produtos/:id', async (req, res) => {
+  const { id } = req.params; // Obtém o ID do produto
+
+  try {
+      const { data, error } = await supabase
+          .from('produtos')
+          .select('*')
+          .eq('id', id)
+          .single(); // Espera um único resultado
+
+      if (error) {
+          console.error('Erro ao acessar o banco de dados:', error.message);
+          return res.status(500).send('Erro ao acessar o banco de dados');
+      }
+
+      if (!data) {
+          return res.status(404).json({ message: 'Produto não encontrado' });
+      }
+
+      res.json(data); // Retorna o produto encontrado
+  } catch (error) {
+      console.error('Erro ao obter produto:', error.message);
+      res.status(500).send('Erro ao obter produto');
+  }
+});
+
+// Rota para editar produto
+app.put('/produtos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nome, descricao } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .update({ nome, descricao }) // Atualiza o produto
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Erro ao atualizar produto:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json(data[0]); // Retorna o produto atualizado
+  } catch (error) {
+    console.error('Erro ao editar produto:', error.message);
+    res.status(500).send('Erro ao editar produto');
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

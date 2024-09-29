@@ -1,6 +1,8 @@
 // Ao adicionar produto (POST)
 document.getElementById('produtoForm').addEventListener('submit', adicionarProduto);
+document.getElementById('produtoEditForm').addEventListener('submit', editarProduto);
 
+// Função para adicionar produto (POST)
 async function adicionarProduto(event) {
     event.preventDefault();
     const nome = document.getElementById('nome').value;
@@ -14,7 +16,6 @@ async function adicionarProduto(event) {
         return;
     }
 
-    // Gerar o link do WhatsApp
     const whatsappLink = `https://api.whatsapp.com/send?phone=${numero}`;
 
     try {
@@ -23,7 +24,7 @@ async function adicionarProduto(event) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ nome, descricao, numero, whatsapp_link: whatsappLink }), // Use o nome correto do campo
+            body: JSON.stringify({ nome, descricao, numero, whatsapp_link: whatsappLink }),
         });
 
         if (response.ok) {
@@ -38,7 +39,6 @@ async function adicionarProduto(event) {
         alert('Erro ao se conectar ao servidor.');
     }
 }
-
 
 // Função para atualizar a lista de produtos (GET)
 async function atualizarListaDeProdutos() {
@@ -74,27 +74,37 @@ async function atualizarListaDeProdutos() {
     }
 }
 
-// Função para carregar os dados do produto no formulário para edição
+// Função para carregar os dados do produto no formulário de edição
 function carregarProdutoParaEdicao(id) {
     fetch(`http://localhost:3000/produtos/${id}`)
         .then(response => response.json())
         .then(produto => {
-            document.getElementById('nome').value = produto.nome;
-            document.getElementById('descricao').value = produto.descricao;
+            document.getElementById('editNome').value = produto.nome;
+            document.getElementById('editDescricao').value = produto.descricao;
+            document.getElementById('editNumero').value = produto.numero;
 
-            // Atualiza o comportamento do formulário para editar o produto
-            document.getElementById('produtoForm').onsubmit = async function(event) {
-                event.preventDefault();
-                await editarProduto(id);
-            };
+            // Mostra o formulário de edição e oculta o formulário de adição
+            document.getElementById('produtoEditForm').style.display = 'block';
+            document.getElementById('produtoForm').style.display = 'none';
+
+            // Define o ID do produto a ser editado
+            document.getElementById('produtoEditForm').dataset.produtoId = id;
+
+            // Rolagem suave para a aba de edição
+            const abaEdicao = document.getElementById('produtoEditForm'); // Localização do elemento da aba de edição
+            abaEdicao.scrollIntoView({ behavior: 'smooth' }); // Rolagem suave
         })
         .catch(error => console.error('Erro ao carregar produto:', error));
 }
 
 // Função para editar produto (PUT)
-async function editarProduto(id) {
-    const nome = document.getElementById('nome').value;
-    const descricao = document.getElementById('descricao').value;
+async function editarProduto(event) {
+    event.preventDefault();
+
+    const id = document.getElementById('produtoEditForm').dataset.produtoId;
+    const nome = document.getElementById('editNome').value;
+    const descricao = document.getElementById('editDescricao').value;
+    const numero = document.getElementById('editNumero').value;
 
     try {
         const response = await fetch(`http://localhost:3000/produtos/${id}`, {
@@ -102,13 +112,14 @@ async function editarProduto(id) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ nome, descricao }),
+            body: JSON.stringify({ nome, descricao, numero }),
         });
 
         if (response.ok) {
             alert('Produto atualizado com sucesso!');
-            document.getElementById('produtoForm').reset();
-            document.getElementById('produtoForm').onsubmit = adicionarProduto; // Volta ao modo de adicionar
+            document.getElementById('produtoEditForm').reset();
+            document.getElementById('produtoEditForm').style.display = 'none';
+            document.getElementById('produtoForm').style.display = 'block'; // Volta ao formulário de adição
             await atualizarListaDeProdutos();
         } else {
             alert('Erro ao atualizar o produto.');
@@ -118,6 +129,9 @@ async function editarProduto(id) {
         alert('Erro ao se conectar ao servidor.');
     }
 }
+
+// Não se esqueça de adicionar a chamada para carregar a lista de produtos ao iniciar a página
+atualizarListaDeProdutos();
 
 // Função para deletar produto (DELETE)
 async function deletarProduto(id) {
