@@ -60,9 +60,9 @@ async function atualizarListaDeProdutos() {
                     <div class="card-body d-flex flex-column justify-content-between">
                         <h5 class="card-title">${produto.nome}</h5>
                         <p class="card-text">${produto.descricao}</p>
-                        <a href="${produto.whatsapp_link}" target="_blank" class="btn btn-primary align-self-center">WhatsApp</a>
-                        <button class="btn btn-warning align-self-center mb-2" onclick="carregarProdutoParaEdicao(${produto.id})">Editar</button>
-                        <button class="btn btn-danger align-self-center" onclick="deletarProduto(${produto.id})">Excluir</button>
+                        <a href="${produto.whatsapp_link}" target="_blank" class="btn btn-primary w-75 align-self-center mb-2">WhatsApp</a>
+                        <button class="btn btn-warning w-75 align-self-center mb-2" onclick="carregarProdutoParaEdicao(${produto.id})">Editar</button>
+                        <button class="btn btn-danger w-75 align-self-center" onclick="deletarProduto(${produto.id})">Excluir</button>
                     </div>
                 </div>
             `;
