@@ -1,3 +1,4 @@
+require("dotenv").config();
 // Ao adicionar produto (POST)
 document.getElementById('produtoForm').addEventListener('submit', adicionarProduto);
 document.getElementById('produtoEditForm').addEventListener('submit', editarProduto);
