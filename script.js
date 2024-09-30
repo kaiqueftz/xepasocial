@@ -56,7 +56,7 @@ async function atualizarListaDeProdutos() {
             produtoDiv.classList.add('col-12', 'col-sm-6', 'col-md-4', 'col-lg-3', 'mb-4');
             produtoDiv.innerHTML = `
                 <div class="card">
-                    <img src="img/produtos/produto_default.jpg" class="card-img-top" alt="${produto.nome}">
+                    <img src="img/produtos/images.png" class="card-img-top" alt="${produto.nome}">
                     <div class="card-body d-flex flex-column justify-content-between">
                         <h5 class="card-title">${produto.nome}</h5>
                         <p class="card-text">${produto.descricao}</p>
